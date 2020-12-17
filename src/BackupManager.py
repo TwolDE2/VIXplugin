@@ -233,7 +233,7 @@ class VIXBackupManager(Screen):
 				del self.emlist[:]
 				mtimes = []
 				for fil in images:
-					if fil.endswith(".tar.gz") and "vix" in fil.lower() or fil.startswith("%s" %defaultprefix):
+					if fil.endswith(".tar.gz"): # prefix should only be used for naming files, not browsing them...
 						if fil.startswith(defaultprefix):   # Ensure the current image backup are sorted to the top
 							prefix="B"
 						else:
@@ -289,8 +289,18 @@ class VIXBackupManager(Screen):
 
 	def keyDelete(self):
 		self.sel = self["list"].getCurrent()
-		self["list"].instance.moveSelectionTo(0)
-		remove(self.BackupDirectory + self.sel)
+		if self.sel:
+			message = _("Are you sure you want to delete this backup:\n ") + self.sel
+			ybox = self.session.openWithCallback(self.doDelete, MessageBox, message, MessageBox.TYPE_YESNO, default=False)
+			ybox.setTitle(_("Remove confirmation"))
+		else:
+			self.session.open(MessageBox, _("There is no backup to delete."), MessageBox.TYPE_INFO, timeout=10)
+
+	def doDelete(self, answer):
+		if answer is True:
+			self.sel = self["list"].getCurrent()
+			self["list"].instance.moveSelectionTo(0)
+			remove(self.BackupDirectory + self.sel)
 		self.populate_List()
 
 	def GreenPressed(self):

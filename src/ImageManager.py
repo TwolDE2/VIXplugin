@@ -1331,7 +1331,6 @@ class ImageManagerDownload(Screen):
 			self.boxtype = HardwareInfo().get_device_name()
 			if self.boxtype == "dm8000":
 				self.boxtype = getMachineMake()
-		versions = [6.4, 6.5]		# for Twol
 		if "www.openvix" in self.urlDistro:
 			versions = [4.2, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5]
 		subfolders = ("", "Archives") # i.e. check root folder and "Archives" folder. Images will appear in the UI in this order.
