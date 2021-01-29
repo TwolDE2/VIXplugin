@@ -129,6 +129,8 @@ class VIXImageManager(Screen):
 		self["key_yellow"] = Button(_("Downloads"))
 		self["key_blue"] = Button(_("Flash"))
 
+		self["key_menu"] = StaticText(_("MENU"))
+
 		self.BackupRunning = False
 		self.BackupDirectory = " "
 		if SystemInfo["canMultiBoot"]:
@@ -192,6 +194,12 @@ class VIXImageManager(Screen):
 				mtimes.append((fil, stat(self.BackupDirectory + fil).st_mtime))  # (filname, mtime)
 		for fil in [x[0] for x in sorted(mtimes, key=lambda x: x[1], reverse=True)]:  # sort by mtime
 			self.emlist.append(fil)
+		if len(self.emlist):
+			self["key_red"].show()
+			self["key_blue"].show()
+		else:
+			self["key_red"].hide()
+			self["key_blue"].hide()
 		self["list"].setList(self.emlist)
 		self["list"].show()
 
@@ -287,12 +295,13 @@ class VIXImageManager(Screen):
 
 	def keyDelete(self):
 		self.sel = self["list"].getCurrent()
-		self["list"].instance.moveSelectionTo(0)
-		if self.sel.endswith(".zip"):
-			remove(self.BackupDirectory + self.sel)
-		else:
-			rmtree(self.BackupDirectory + self.sel)
-		self.refreshList()
+		if self.sel is not None:
+			self["list"].instance.moveSelectionTo(0)
+			if self.sel.endswith(".zip"):
+				remove(self.BackupDirectory + self.sel)
+			else:
+				rmtree(self.BackupDirectory + self.sel)
+			self.refreshList()
 
 	def GreenPressed(self):
 		backup = None
